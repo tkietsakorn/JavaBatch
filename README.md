@@ -38,7 +38,7 @@ Maven
 2. Resources - https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
 
 Spring Basics
-1. Resources - https://www.baeldung.com/ , https://docs.spring.io/spring-framework/docs/current/reference/html/
+1. Resources - https://www.baeldung.com/ , https://docs.spring.io/spring-framework/docs/current/reference/html/, https://www.marcobehler.com/guides/spring-framework
 
 MySQL
 1. Download - https://www.mysql.com/downloads/
