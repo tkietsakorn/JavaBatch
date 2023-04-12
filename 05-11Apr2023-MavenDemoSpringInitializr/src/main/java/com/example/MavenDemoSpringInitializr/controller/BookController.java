@@ -1,17 +1,25 @@
 package com.example.MavenDemoSpringInitializr.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.MavenDemoSpringInitializr.model.Book;
+import com.example.MavenDemoSpringInitializr.service.BookService;
 
 @RestController
 public class BookController {
@@ -34,10 +42,16 @@ public class BookController {
 		System.out.println("With Properties Object");
 	}
 	
+	@Autowired
+	@Qualifier("bookServiceImpl2")
+	BookService bookService;
+	
 	@GetMapping("/demo")
 	public Book getBook() {
 //		Book book = new Book();
 		logger.info("Book Object in BookController {}",book);
+		bookService.printHello();
+
 		return book;
 		
 		//Book@37b57b54 - Singleton Instance Created By Spring
@@ -47,6 +61,8 @@ public class BookController {
 		//Book@472698d  - Singleton Instance Created By Spring
 		//Book@472698d
 		//Book@472698d
+		
+
 	}
 	
 	//getBook - GET - Param - Title
@@ -69,5 +85,48 @@ public class BookController {
 		logger.info(book.toString());
 		
 	}
+	
+	//Crud APIS
+	//insertBook - POST - RequestBody
+	//updateBook - PUT - RequestBody
+	//getBook - GET - Path Variable
+	//DeleteBook - DELETE - Path Variable
+	//GetAllBooks - GET 
+	
+	private HashMap<Integer, Book> bookHashMap = new HashMap<Integer, Book>();
+	
+	@PostMapping("/book")
+	public String insertBook(@RequestBody Book book) {
+		
+		if(bookHashMap.containsKey(book.getId())) {
+			logger.error("Book Id Already present!");
+			return "Book Id Already present!";
+		}
+		bookHashMap.put(book.getId(), book);
+		return "Book Inserted Successfully";
+	}
+	
+	@PutMapping("/book")
+	public Book updatedBook(@RequestBody Book book) {
+		bookHashMap.put(book.getId(), book);
+		return bookHashMap.get(book.getId());
+	}
+	
+	@GetMapping("/book/{bookId}")
+	public Book getBook(@PathVariable("bookId") int bookId) {
+		logger.info("BookId Received : "+bookId);
+		return bookHashMap.get(bookId);
+	}
+	
+	@DeleteMapping("/book/{bookId}")
+	public String deleteBook(@PathVariable("bookId") int bookId) {
+		bookHashMap.remove(bookId);
+		return "Book Deleted Successfully";
+	}
+	
+	@GetMapping("/book")
+	public List<Book> getBooks(){
+		return bookHashMap.values().stream().collect(Collectors.toList());
+		}
 
 }
