@@ -96,14 +96,15 @@ public class BookController {
 	private HashMap<Integer, Book> bookHashMap = new HashMap<Integer, Book>();
 	
 	@PostMapping("/book")
-	public String insertBook(@RequestBody Book book) {
+	public ResponseEntity insertBook(@RequestBody Book book) {
 		
 		if(bookHashMap.containsKey(book.getId())) {
 			logger.error("Book Id Already present!");
-			return "Book Id Already present!";
+			return new ResponseEntity("Book Id Already present!", HttpStatus.BAD_REQUEST);
 		}
 		bookHashMap.put(book.getId(), book);
-		return "Book Inserted Successfully";
+		return new ResponseEntity("Book Inserted Successfully", HttpStatus.ACCEPTED);
+
 	}
 	
 	@PutMapping("/book")
