@@ -1,5 +1,6 @@
 package com.example.MavenDemoSpringInitializr.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.MavenDemoSpringInitializr.dto.ErrorResponse;
 import com.example.MavenDemoSpringInitializr.model.Book;
 import com.example.MavenDemoSpringInitializr.service.BookService;
 
 @RestController
+@Configuration
 public class BookController {
 	
 	private static Logger logger = LoggerFactory.getLogger(BookController.class);
@@ -29,7 +37,7 @@ public class BookController {
 //	@Autowired
 //	Book book;
 	
-	Book book;
+	private Book book;
 	
 	@Autowired
 	public BookController(Book book) {
@@ -96,14 +104,15 @@ public class BookController {
 	private HashMap<Integer, Book> bookHashMap = new HashMap<Integer, Book>();
 	
 	@PostMapping("/book")
-	public String insertBook(@RequestBody Book book) {
+	public ResponseEntity insertBook(@RequestBody Book book) {
 		
 		if(bookHashMap.containsKey(book.getId())) {
 			logger.error("Book Id Already present!");
-			return "Book Id Already present!";
+			return new ResponseEntity("Book Id Already present!", HttpStatus.BAD_REQUEST);
 		}
 		bookHashMap.put(book.getId(), book);
-		return "Book Inserted Successfully";
+		return new ResponseEntity("Book Inserted Successfully", HttpStatus.ACCEPTED);
+
 	}
 	
 	@PutMapping("/book")
@@ -128,5 +137,7 @@ public class BookController {
 	public List<Book> getBooks(){
 		return bookHashMap.values().stream().collect(Collectors.toList());
 		}
+	
+
 
 }
